@@ -2,14 +2,17 @@
 #include <iostream>
 
 int main() {
-    auto *minHeap = new Heap<int>([](int item1, int item2) {
+    auto *heap = new Heap<int>([](int item1, int item2) {
         return item1 <= item2 ? item1 : item2;
     });
-    minHeap->push(4);
-    auto highestPriorityItem = minHeap->peek();
-    if (highestPriorityItem.has_value()) {
-        std::cout << *highestPriorityItem << std::endl;
+    heap->push(5);
+    heap->push(8);
+    heap->push(4);
+    heap->push(1);
+    std::cout << "Heap: ";
+    for (auto i = 0; i < heap->size(); i++) {
+        std::cout << (*heap)[i] << " ";
     }
-    std::cout << minHeap->size() << std::endl;
+    std::cout << std::endl;
     return 0;
 }
