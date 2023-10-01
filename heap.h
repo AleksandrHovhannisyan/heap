@@ -57,9 +57,7 @@ void Heap<Item>::push(Item item) {
         auto priorityItem = this->getPriorityItem(item, parentItem);
         if (priorityItem == parentItem) return;
         // Swap parent and item at current index
-        auto tempItem = this->items[parentIndex];
-        this->items[parentIndex] = item;
-        this->items[index] = tempItem;
+        std::swap(this->items[index], this->items[parentIndex]);
         // In next iteration, compare parent we just swapped with its parent
         index = parentIndex;
     }
