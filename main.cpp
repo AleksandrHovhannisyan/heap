@@ -7,6 +7,9 @@ int main() {
     });
     minHeap->push(4);
     auto highestPriorityItem = minHeap->peek();
-    std::cout << highestPriorityItem << std::endl;
+    if (highestPriorityItem.has_value()) {
+        std::cout << *highestPriorityItem << std::endl;
+    }
+    std::cout << minHeap->size() << std::endl;
     return 0;
 }
