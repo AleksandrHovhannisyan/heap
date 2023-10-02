@@ -18,6 +18,7 @@ class Heap {
         void push(Item item);
         void heapify(int index);
         decltype(items.size()) size() const { return items.size(); };
+        bool isEmpty() const { return items.empty(); };
         Item const& operator[](int index) const { return items[index]; };
 };
 
@@ -44,7 +45,7 @@ unsigned int Heap<Item>::getRightChildIndex(int nodeIndex) {
 
 template <typename Item>
 std::optional<Item> Heap<Item>::peek() const {
-    return this->items.empty() ? std::nullopt : std::optional<Item>{ this->items[0] };
+    return this->isEmpty() ? std::nullopt : std::optional<Item>{ this->items[0] };
 }
 
 template <typename Item>
