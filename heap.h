@@ -9,6 +9,8 @@ class Heap {
     private:
         std::vector<Item> items;
         std::function<Item(Item, Item)> getPriorityItem;
+        void siftDown(int index);
+        void siftUp(int index);
         static unsigned int getParentIndex(int nodeIndex);
         static unsigned int getLeftChildIndex(int nodeIndex);
         static unsigned int getRightChildIndex(int nodeIndex);
@@ -16,7 +18,6 @@ class Heap {
         Heap(std::function<Item(Item, Item)> getPriorityItem);
         std::optional<Item> peek() const;
         void push(Item item);
-        void heapify(int index);
         decltype(items.size()) size() const { return items.size(); };
         bool isEmpty() const { return items.empty(); };
         Item const& operator[](int index) const { return items[index]; };
@@ -49,9 +50,9 @@ std::optional<Item> Heap<Item>::peek() const {
 }
 
 template <typename Item>
-void Heap<Item>::heapify(int index) {
+void Heap<Item>::siftUp(int index) {
     if (index < 0 || index >= this->size()) {
-        throw std::invalid_argument("Index out of bounds.");
+        throw std::invalid_argument("Index out of bounds. Cannot heapify.");
     }
     while (index > 0) {
         auto parentIndex = Heap<Item>::getParentIndex(index);
@@ -66,10 +67,42 @@ void Heap<Item>::heapify(int index) {
 }
 
 template <typename Item>
+void Heap<Item>::siftDown(int index) {
+    if (index < 0 || index >= this->size()) {
+        throw std::invalid_argument("Index out of bounds. Cannot sift down.");
+    }
+    auto size = this->size();
+    int smallestIndex = index;
+    while (true) {
+        auto leftChildIndex = Heap<Item>::getLeftChildIndex(index);
+        auto rightChildIndex = Heap<Item>::getRightChildIndex(index);
+        
+        if (leftChildIndex < size) {
+            auto leftChild = this->items[leftChildIndex];
+            if (this->getPriorityItem(this->items[smallestIndex], leftChild) == leftChild) {
+                smallestIndex = leftChildIndex;
+            }
+        }
+        if (rightChildIndex < size) {
+            auto rightChild = this->items[rightChildIndex];
+            if (this->getPriorityItem(this->items[smallestIndex], rightChild) == rightChild) {
+                smallestIndex = rightChildIndex;
+            }
+        }
+
+        if (index == smallestIndex) {
+            break;
+        }
+        std::swap(this->items[index], this->items[smallestIndex]);
+        index = smallestIndex;
+    }
+}
+
+template <typename Item>
 void Heap<Item>::push(Item item) {
     // First just insert the item at the end of the heap
     this->items.push_back(item);
     // Then swim the item up to the root if it violates the heap invariant
-    this->heapify(this->size() - 1);
+    this->siftUp(this->size() - 1);
 }
 
