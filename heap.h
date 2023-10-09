@@ -9,13 +9,14 @@ class Heap {
     private:
         std::vector<Item> items;
         std::function<Item(Item, Item)> getPriorityItem;
+        std::function<Item(Item, Item)> areItemsEqual;
         void siftDown(int index);
         void siftUp(int index);
         static unsigned int getParentIndex(int nodeIndex);
         static unsigned int getLeftChildIndex(int nodeIndex);
         static unsigned int getRightChildIndex(int nodeIndex);
     public:
-        Heap(std::function<Item(Item, Item)> getPriorityItem);
+        Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<Item(Item, Item)> areItemsEqual);
         std::optional<Item> peek() const;
         void push(Item item);
         decltype(items.size()) size() const { return items.size(); };
@@ -24,9 +25,10 @@ class Heap {
 };
 
 template <typename Item>
-Heap<Item>::Heap(std::function<Item(Item, Item)> getPriorityItem) {
+Heap<Item>::Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<Item(Item, Item)> areItemsEqual) {
     this->items = std::vector<Item> { };
     this->getPriorityItem = getPriorityItem;
+    this->areItemsEqual = areItemsEqual;
 }
 
 template <typename Item>
@@ -52,13 +54,13 @@ std::optional<Item> Heap<Item>::peek() const {
 template <typename Item>
 void Heap<Item>::siftUp(int index) {
     if (index < 0 || index >= this->size()) {
-        throw std::invalid_argument("Index out of bounds. Cannot heapify.");
+        throw std::invalid_argument("Index out of bounds. Cannot siftUp.");
     }
     while (index > 0) {
         auto parentIndex = Heap<Item>::getParentIndex(index);
         auto parentItem = this->items[parentIndex];
         auto priorityItem = this->getPriorityItem(this->items[index], parentItem);
-        if (priorityItem == parentItem) return;
+        if (this->areItemsEqual(priorityItem, parentItem)) return;
         // Swap parent and item at current index
         std::swap(this->items[index], this->items[parentIndex]);
         // In next iteration, compare parent we just swapped with its parent
@@ -79,13 +81,15 @@ void Heap<Item>::siftDown(int index) {
         
         if (leftChildIndex < size) {
             auto leftChild = this->items[leftChildIndex];
-            if (this->getPriorityItem(this->items[smallestIndex], leftChild) == leftChild) {
+            auto priorityItem = this->getPriorityItem(this->items[smallestIndex], leftChild);
+            if (this->areItemsEqual(priorityItem, leftChild)) {
                 smallestIndex = leftChildIndex;
             }
         }
         if (rightChildIndex < size) {
             auto rightChild = this->items[rightChildIndex];
-            if (this->getPriorityItem(this->items[smallestIndex], rightChild) == rightChild) {
+            auto priorityItem = this->getPriorityItem(this->items[smallestIndex], rightChild);
+            if (this->areItemsEqual(priorityItem, rightChild)) {
                 smallestIndex = rightChildIndex;
             }
         }
