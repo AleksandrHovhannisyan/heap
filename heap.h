@@ -10,8 +10,8 @@ class Heap {
         std::vector<Item> items;
         std::function<Item(Item, Item)> getPriorityItem;
         std::function<Item(Item, Item)> areItemsEqual;
-        void siftDown(int index);
-        void siftUp(int index);
+        void siftDown(unsigned long int index);
+        void siftUp(unsigned long int index);
         static unsigned int getParentIndex(int nodeIndex);
         static unsigned int getLeftChildIndex(int nodeIndex);
         static unsigned int getRightChildIndex(int nodeIndex);
@@ -19,6 +19,7 @@ class Heap {
         Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<Item(Item, Item)> areItemsEqual);
         std::optional<Item> peek() const;
         void push(Item item);
+        std::optional<Item> pop();
         decltype(items.size()) size() const { return items.size(); };
         bool isEmpty() const { return items.empty(); };
         Item const& operator[](int index) const { return items[index]; };
@@ -52,7 +53,7 @@ std::optional<Item> Heap<Item>::peek() const {
 }
 
 template <typename Item>
-void Heap<Item>::siftUp(int index) {
+void Heap<Item>::siftUp(unsigned long int index) {
     if (index < 0 || index >= this->size()) {
         throw std::invalid_argument("Index out of bounds. Cannot siftUp.");
     }
@@ -69,12 +70,12 @@ void Heap<Item>::siftUp(int index) {
 }
 
 template <typename Item>
-void Heap<Item>::siftDown(int index) {
+void Heap<Item>::siftDown(unsigned long int index) {
     if (index < 0 || index >= this->size()) {
         throw std::invalid_argument("Index out of bounds. Cannot sift down.");
     }
     auto size = this->size();
-    int smallestIndex = index;
+    auto smallestIndex = index;
     while (true) {
         auto leftChildIndex = Heap<Item>::getLeftChildIndex(index);
         auto rightChildIndex = Heap<Item>::getRightChildIndex(index);
@@ -110,3 +111,15 @@ void Heap<Item>::push(Item item) {
     this->siftUp(this->size() - 1);
 }
 
+template <typename Item>
+std::optional<Item> Heap<Item>::pop() {
+    if (this->isEmpty()) return std::nullopt;
+    // Swap root with last leaf
+    std::swap(this->items[0], this->items[this->size() - 1]);
+    // Pop the last leaf (root)
+    auto formerRoot = this->items.back();
+    this->items.pop_back();
+    // Sift down to repair heap
+    this->siftDown(0);
+    return formerRoot;
+}
