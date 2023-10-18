@@ -8,15 +8,28 @@ template <typename Item>
 class Heap {
     private:
         std::vector<Item> items;
-        std::function<Item(Item, Item)> getPriorityItem;
+        /**
+         * A comparator function that accepts two items as an argument and returns an integer signifying which of the two should be prioritized in the heap.
+         * @returns a negative integer if the first item should be prioritized; a positive integer if the second item should be prioritized; or zero if the two items have equal priority.
+         */
+        std::function<int(Item, Item)> compareItems;
+        /** A comparator function that accepts two items as an argument and returns true if they are the same item and false otherwise. */
         std::function<bool(Item, Item)> areItemsEqual;
+        /** Private helper that returns the item to prioritize, given two indices to compare */
+        Item &getPriorityItem(unsigned long int index1, unsigned long int index2);
         void siftDown(unsigned long int index);
         void siftUp(unsigned long int index);
         static unsigned int getParentIndex(int nodeIndex);
         static unsigned int getLeftChildIndex(int nodeIndex);
         static unsigned int getRightChildIndex(int nodeIndex);
     public:
-        Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<bool(Item, Item)> areItemsEqual);
+        /** 
+         * Constructor for the heap.
+         * @param compareItems A comparator function that accepts two items as an argument and should return: 1. a negative integer if the first item should be prioritized,
+         * 2. a positive integer if the second item should be prioritized, 3. zero if the two items have equal priority.
+         * @param areItemsEqual A comparator function that accepts two items as an argument and returns true if they are the same item and false otherwise.
+         */
+        Heap(std::function<int(Item, Item)> compareItems, std::function<bool(Item, Item)> areItemsEqual);
         std::optional<Item> peek() const;
         void push(Item item);
         std::optional<Item> pop();
@@ -26,9 +39,9 @@ class Heap {
 };
 
 template <typename Item>
-Heap<Item>::Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<bool(Item, Item)> areItemsEqual) {
+Heap<Item>::Heap(std::function<int(Item, Item)> compareItems, std::function<bool(Item, Item)> areItemsEqual) {
     this->items = std::vector<Item> { };
-    this->getPriorityItem = getPriorityItem;
+    this->compareItems = compareItems;
     this->areItemsEqual = areItemsEqual;
 }
 
@@ -53,6 +66,14 @@ std::optional<Item> Heap<Item>::peek() const {
 }
 
 template <typename Item>
+Item& Heap<Item>::getPriorityItem(unsigned long int index1, unsigned long int index2) {
+    auto item1 = this->items[index1];
+    auto item2 = this->items[index2];
+    auto comparatorFlag = this->compareItems(item1, item2);
+    return comparatorFlag < 0 ? item1 : comparatorFlag > 0 ? item2 : item1;
+}
+
+template <typename Item>
 void Heap<Item>::siftUp(unsigned long int index) {
     if (index < 0 || index >= this->size()) {
         throw std::invalid_argument("Index out of bounds. Cannot siftUp.");
@@ -60,7 +81,7 @@ void Heap<Item>::siftUp(unsigned long int index) {
     while (index > 0) {
         auto parentIndex = Heap<Item>::getParentIndex(index);
         auto parentItem = this->items[parentIndex];
-        auto priorityItem = this->getPriorityItem(this->items[index], parentItem);
+        auto priorityItem = this->getPriorityItem(index, parentIndex);
         if (this->areItemsEqual(priorityItem, parentItem)) return;
         // Swap parent and item at current index
         std::swap(this->items[index], this->items[parentIndex]);
@@ -82,14 +103,14 @@ void Heap<Item>::siftDown(unsigned long int index) {
         
         if (leftChildIndex < size) {
             auto leftChild = this->items[leftChildIndex];
-            auto priorityItem = this->getPriorityItem(this->items[smallestIndex], leftChild);
+            auto priorityItem = this->getPriorityItem(smallestIndex, leftChildIndex);
             if (this->areItemsEqual(priorityItem, leftChild)) {
                 smallestIndex = leftChildIndex;
             }
         }
         if (rightChildIndex < size) {
             auto rightChild = this->items[rightChildIndex];
-            auto priorityItem = this->getPriorityItem(this->items[smallestIndex], rightChild);
+            auto priorityItem = this->getPriorityItem(smallestIndex, rightChildIndex);
             if (this->areItemsEqual(priorityItem, rightChild)) {
                 smallestIndex = rightChildIndex;
             }

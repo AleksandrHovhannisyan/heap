@@ -11,7 +11,7 @@ std::cout << "Heap: ";
 
 int main() {
     auto *heap = new Heap<int>(
-        [](int item1, int item2) { return item1 <= item2 ? item1 : item2; },
+        [](int item1, int item2) { return item1 - item2; },
         [](int item1, int item2) { return item1 == item2; }
     );
     heap->push(5);
