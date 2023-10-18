@@ -36,7 +36,7 @@ class Heap {
         /** Returns the currently prioritized item (root) from this heap without modifying the heap. */
         std::optional<Item> peek() const;
         /** Inserts the given item into the heap, maintaining the heap invariant property. */
-        void push(Item item);
+        void push(Item& item);
         /** Removes and returns the currently prioritized item (root) from this heap. */
         std::optional<Item> pop();
         /** Returns the number of items in this heap. */
@@ -133,7 +133,7 @@ void Heap<Item>::siftDown(unsigned long int index) {
 }
 
 template <typename Item>
-void Heap<Item>::push(Item item) {
+void Heap<Item>::push(Item& item) {
     // First just insert the item at the end of the heap
     this->items.push_back(item);
     // Then swim the item up to the root if it violates the heap invariant
