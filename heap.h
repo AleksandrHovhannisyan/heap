@@ -17,7 +17,9 @@ class Heap {
         std::function<bool(Item, Item)> areItemsEqual;
         /** Private helper that returns the item to prioritize, given two indices to compare */
         Item &getPriorityItem(unsigned long int index1, unsigned long int index2);
+        /** Starts at the given index and walks down the tree, swapping nodes as needed to maintain the heap invariant. */
         void siftDown(unsigned long int index);
+        /** Starts at the given index and walks up the tree, swapping nodes as needed to maintain the heap invariant. */
         void siftUp(unsigned long int index);
         /** Given an index, returns the index of that node's parent element in the array representation of a heap. */
         static unsigned int getParentIndex(int nodeIndex);
