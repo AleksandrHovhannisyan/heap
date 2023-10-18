@@ -19,8 +19,11 @@ class Heap {
         Item &getPriorityItem(unsigned long int index1, unsigned long int index2);
         void siftDown(unsigned long int index);
         void siftUp(unsigned long int index);
+        /** Given an index, returns the index of that node's parent element in the array representation of a heap. */
         static unsigned int getParentIndex(int nodeIndex);
+        /** Given an index, returns the index of that node's left child in the array representation of a heap. */
         static unsigned int getLeftChildIndex(int nodeIndex);
+        /** Given an index, returns the index of that node's right child in the array representation of a heap. */
         static unsigned int getRightChildIndex(int nodeIndex);
     public:
         /** 
@@ -30,10 +33,15 @@ class Heap {
          * @param areItemsEqual A comparator function that accepts two items as an argument and returns true if they are the same item and false otherwise.
          */
         Heap(std::function<int(Item, Item)> compareItems, std::function<bool(Item, Item)> areItemsEqual);
+        /** Returns the currently prioritized item (root) from this heap without modifying the heap. */
         std::optional<Item> peek() const;
+        /** Inserts the given item into the heap, maintaining the heap invariant property. */
         void push(Item item);
+        /** Removes and returns the currently prioritized item (root) from this heap. */
         std::optional<Item> pop();
+        /** Returns the number of items in this heap. */
         decltype(items.size()) size() const { return items.size(); };
+        /** Returns true if the heap has zero items and false otherwise. */
         bool isEmpty() const { return items.empty(); };
         Item const& operator[](int index) const { return items[index]; };
 };
