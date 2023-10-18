@@ -1,1 +1,5 @@
 main
+CMakeFiles/
+CMakeLists.txt
+*.cmake
+Makefile
