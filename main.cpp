@@ -26,5 +26,6 @@ int main() {
         std::cout << "Popped root: " << *poppedRoot << "\n";
     }
     printHeap(heap);
+    std::cout << std::endl;
     return 0;
 }

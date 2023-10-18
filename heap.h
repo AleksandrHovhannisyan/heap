@@ -9,14 +9,14 @@ class Heap {
     private:
         std::vector<Item> items;
         std::function<Item(Item, Item)> getPriorityItem;
-        std::function<Item(Item, Item)> areItemsEqual;
+        std::function<bool(Item, Item)> areItemsEqual;
         void siftDown(unsigned long int index);
         void siftUp(unsigned long int index);
         static unsigned int getParentIndex(int nodeIndex);
         static unsigned int getLeftChildIndex(int nodeIndex);
         static unsigned int getRightChildIndex(int nodeIndex);
     public:
-        Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<Item(Item, Item)> areItemsEqual);
+        Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<bool(Item, Item)> areItemsEqual);
         std::optional<Item> peek() const;
         void push(Item item);
         std::optional<Item> pop();
@@ -26,7 +26,7 @@ class Heap {
 };
 
 template <typename Item>
-Heap<Item>::Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<Item(Item, Item)> areItemsEqual) {
+Heap<Item>::Heap(std::function<Item(Item, Item)> getPriorityItem, std::function<bool(Item, Item)> areItemsEqual) {
     this->items = std::vector<Item> { };
     this->getPriorityItem = getPriorityItem;
     this->areItemsEqual = areItemsEqual;
