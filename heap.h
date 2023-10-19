@@ -43,6 +43,8 @@ class Heap {
         std::optional<Item> pop();
         /** Returns the number of items in this heap. */
         decltype(items.size()) size() const { return items.size(); };
+        /** Empties the heap. */
+        void clear();
         /** Returns true if the heap has zero items and false otherwise. */
         bool isEmpty() const { return items.empty(); };
         Item const& operator[](int index) const { return items[index]; };
@@ -153,4 +155,9 @@ std::optional<Item> Heap<Item>::pop() {
     // Sift down to repair heap
     this->siftDown(0);
     return formerRoot;
+}
+
+template <typename Item>
+void Heap<Item>::clear() {
+    this->items.clear();
 }

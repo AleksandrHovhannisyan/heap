@@ -1,5 +1,9 @@
 main
+tests
 CMakeFiles/
 CMakeLists.txt
-*.cmake
 Makefile
+Testing/
+_deps/
+*.cmake
+*.tcl
