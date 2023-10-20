@@ -4,9 +4,9 @@
 
 TEST_CASE("size") {
     auto* heap = new Heap<int>(
-            [](int item1, int item2) { return item1 - item2; },
-            [](int item1, int item2) { return item1 == item2; }
-            );
+        [](const int& item1, const int& item2) { return item1 <= item2 ? item1 : item2; },
+        [](const int& item1, const int& item2) { return item1 == item2; }
+    );
     REQUIRE(heap->size() == 0);
     REQUIRE(heap->isEmpty());
 
@@ -28,9 +28,9 @@ TEST_CASE("size") {
 
 TEST_CASE("min heap") {
     auto* heap = new Heap<int>(
-            [](int item1, int item2) { return item1 - item2; },
-            [](int item1, int item2) { return item1 == item2; }
-            );
+        [](const int& item1, const int& item2) { return item1 <= item2 ? item1 : item2; },
+        [](const int& item1, const int& item2) { return item1 == item2; }
+    );
     int items[] = { 5, 8, 4, 20, 7, 1 };
 
     for (auto item : items) {

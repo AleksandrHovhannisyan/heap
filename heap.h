@@ -8,15 +8,8 @@ template <typename Item>
 class Heap {
     private:
         std::vector<Item> items;
-        /**
-         * A comparator function that accepts two items as an argument and returns an integer signifying which of the two should be prioritized in the heap.
-         * @returns a negative integer if the first item should be prioritized; a positive integer if the second item should be prioritized; or zero if the two items have equal priority.
-         */
-        std::function<int(Item, Item)> compareItems;
-        /** A comparator function that accepts two items as an argument and returns true if they are the same item and false otherwise. */
-        std::function<bool(Item, Item)> areItemsEqual;
-        /** Private helper that returns the item to prioritize, given two indices to compare */
-        Item &getPriorityItem(unsigned long int index1, unsigned long int index2);
+        std::function<Item(const Item&, const Item&)> getPriorityItem;
+        std::function<bool(const Item&, const Item&)> areItemsEqual;
         /** Starts at the given index and walks down the tree, swapping nodes as needed to maintain the heap invariant. */
         void siftDown(unsigned long int index);
         /** Starts at the given index and walks up the tree, swapping nodes as needed to maintain the heap invariant. */
@@ -30,11 +23,10 @@ class Heap {
     public:
         /** 
          * Constructor for the heap.
-         * @param compareItems A comparator function that accepts two items as an argument and should return: 1. a negative integer if the first item should be prioritized,
-         * 2. a positive integer if the second item should be prioritized, 3. zero if the two items have equal priority.
+         * @param getPriorityItem Accepts two items to compare and is expected to return the one that should be prioritized.
          * @param areItemsEqual A comparator function that accepts two items as an argument and returns true if they are the same item and false otherwise.
          */
-        Heap(std::function<int(Item, Item)> compareItems, std::function<bool(Item, Item)> areItemsEqual);
+        Heap(std::function<Item(const Item&, const Item&)> getPriorityItem, std::function<bool(const Item&, const Item&)> areItemsEqual);
         /** Returns the currently prioritized item (root) from this heap without modifying the heap. */
         std::optional<Item> peek() const;
         /** Inserts the given item into the heap, maintaining the heap invariant property. */
@@ -51,9 +43,9 @@ class Heap {
 };
 
 template <typename Item>
-Heap<Item>::Heap(std::function<int(Item, Item)> compareItems, std::function<bool(Item, Item)> areItemsEqual) {
+Heap<Item>::Heap(std::function<Item(const Item&, const Item&)> getPriorityItem, std::function<bool(const Item&, const Item&)> areItemsEqual) {
     this->items = std::vector<Item> { };
-    this->compareItems = compareItems;
+    this->getPriorityItem = getPriorityItem;
     this->areItemsEqual = areItemsEqual;
 }
 
@@ -78,14 +70,6 @@ std::optional<Item> Heap<Item>::peek() const {
 }
 
 template <typename Item>
-Item& Heap<Item>::getPriorityItem(unsigned long int index1, unsigned long int index2) {
-    auto item1 = this->items[index1];
-    auto item2 = this->items[index2];
-    auto comparatorFlag = this->compareItems(item1, item2);
-    return comparatorFlag < 0 ? item1 : comparatorFlag > 0 ? item2 : item1;
-}
-
-template <typename Item>
 void Heap<Item>::siftUp(unsigned long int index) {
     if (index < 0 || index >= this->size()) {
         throw std::invalid_argument("Index out of bounds. Cannot siftUp.");
@@ -93,7 +77,7 @@ void Heap<Item>::siftUp(unsigned long int index) {
     while (index > 0) {
         auto parentIndex = Heap<Item>::getParentIndex(index);
         auto parentItem = this->items[parentIndex];
-        auto priorityItem = this->getPriorityItem(index, parentIndex);
+        auto priorityItem = this->getPriorityItem(this->items[index], parentItem);
         if (this->areItemsEqual(priorityItem, parentItem)) return;
         // Swap parent and item at current index
         std::swap(this->items[index], this->items[parentIndex]);
@@ -115,14 +99,14 @@ void Heap<Item>::siftDown(unsigned long int index) {
         
         if (leftChildIndex < size) {
             auto leftChild = this->items[leftChildIndex];
-            auto priorityItem = this->getPriorityItem(smallestIndex, leftChildIndex);
+            auto priorityItem = this->getPriorityItem(this->items[smallestIndex], leftChild);
             if (this->areItemsEqual(priorityItem, leftChild)) {
                 smallestIndex = leftChildIndex;
             }
         }
         if (rightChildIndex < size) {
             auto rightChild = this->items[rightChildIndex];
-            auto priorityItem = this->getPriorityItem(smallestIndex, rightChildIndex);
+            auto priorityItem = this->getPriorityItem(this->items[smallestIndex], rightChild);
             if (this->areItemsEqual(priorityItem, rightChild)) {
                 smallestIndex = rightChildIndex;
             }
