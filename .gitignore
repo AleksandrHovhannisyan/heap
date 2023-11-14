@@ -1,9 +1,38 @@
-main
-tests
-CMakeFiles/
-CMakeLists.txt
-Makefile
-Testing/
-_deps/
+# CMake
+/_deps/
+/build/
+/bin/
+/lib/
+/CMakeFiles/
+/Testing/
+CMakeCache.txt
 *.cmake
-*.tcl
+Makefile
+install_manifest.txt
+DartConfiguration.tcl
+
+# Visual Studio
+*.suo
+*.user
+*.sln.docstates
+
+# Xcode
+*.user.*
+*.workspace
+*.xcuserdata/
+
+# Compiled Object Files
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+
+# Temporary Files
+*~
+.*.swp
+CMakeLists.txt.user
+
+# System Files
+.DS_Store
+
